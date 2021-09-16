@@ -1,0 +1,16 @@
+﻿player1,player2,score1,score2
+alternator,appeaser,225,225
+alternator,backstabber,71,291
+alternator,punisher,61,296
+alternator,titfortat,253,248
+alternator,handshaker,396,151
+appeaser,backstabber,295,300
+appeaser,punisher,300,300
+appeaser,titfortat,300,300
+appeaser,handshaker,52,302
+backstabber,punisher,300,295
+backstabber,titfortat,300,295
+backstabber,handshaker,99,114
+punisher,titfortat,300,300
+punisher,handshaker,101,106
+titfortat,handshaker,101,106
