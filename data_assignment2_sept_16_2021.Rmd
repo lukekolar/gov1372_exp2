@@ -116,6 +116,8 @@ The following code makes a data frame called `player_data_long` that you can use
 
 If you want, try to figure out what each line of code does. Cleaning the data and rearranging it like this is an important part of data science, not just running regressions and taking means. This is why we are leaving some of it to you, via `group_by()` and `summarize()`.
 
+To rank the strategies based on the number of wins, think about making use of the `winner` variable in the `pd_data` data frame.
+
 ```{r, message = F, warning = F}
 
 player1_data <- pd_data %>% select(player = player1, score = score1, opponent = player2)
@@ -134,7 +136,8 @@ pd_data %>%
 
 ```
 
-To rank the strategies based on the number of wins, think about making use of the `winner` variable in the `pd_data` data frame.
+**ANSWER:** *Three strategies tied for highest number of wins, with 4 each: backstabber, handshaker, and tie. For number of points won, punisher came in first (1292 points), followed closely by backstabber (1290). Axelrod didn't study the total number of wins, so I'll consider the total points in my analysis. Punisher won the tournament because it's somewhat similar to titfortat in its qualities- it cooperates initially, doesn't retaliate excessively (proportionally to the opponent's defection), then continues to cooperate. In other words: It's nice - generally cooperative. It retaliates, but it's forgiving - it doesn't retaliate blindly, and bases its defection on the other player's fairly. And it's clear when it cooperates - other strategies, like handshaker, will recognize its qualities and cooperate.*
+
 
 ## Question 2
 
@@ -142,7 +145,22 @@ To rank the strategies based on the number of wins, think about making use of th
 
 ![Here is an example of a plot you might make.](./rmd_photos/question2.png)
 
+```{r}
 
+player_data_long %>% 
+  filter(player == "punisher") %>% 
+  ggplot(aes(x = opponent, y = score)) + geom_col(fill = "azure3") +
+    labs(x = "opponent", y = "score", 
+         title = "Punisher Score Against Opponents") + 
+    theme(plot.title = element_text(face = "bold", hjust = 0.5),
+          axis.text.x = element_text(angle = 0, vjust = 0.5),
+          plot.background = element_rect(fill = "white"),
+          axis.title = element_text(face = "bold"),
+          panel.background = element_rect(fill = "white", color = "black"))
+
+```
+
+**ANSWER:** *The overall winner, punisher, fared well against most strategies - it cooperated with titfortat, backstabber, and appeaser due to its initial cooperative move, leading to high scores for both strategies. It isn't too easy on alternator, and punishes it for its defection, "catching on" to its pattern and making it the sucker. Handshaker is less predictable, and their behaviors lead both to generally co-defect, which explains why each leave with low scores.*
 
 
 ## Question 3: Data Science Question
@@ -162,21 +180,28 @@ player_data_long %>%
   mutate(avg_against = mean(avg_against1)) %>% 
   ungroup() %>% 
   ggplot(aes(x = opponent, y = score)) + geom_col(fill = "azure3") + 
-  facet_wrap(~player) + 
-  geom_hline(aes(yintercept = avg, color = "mean score")) + 
-  geom_hline(aes(yintercept = avg_against, color = "mean opponent score")) +
-  labs(x = "opponent", y = "score aainst opponent", color = NULL) +
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5),
-        plot.background = element_rect(fill = "white"),
-        axis.title = element_text(face = "bold"),
-        panel.background = element_rect(fill = "white", color = "black"),
-        strip.background = element_rect(color = "NA", fill = "NA"),
-        strip.text.x = element_text(size = 12, face = "bold", color = "black")) + 
-  scale_colour_manual(values = c("red", "blue"))
+    facet_wrap(~player) + 
+    geom_hline(aes(yintercept = avg, color = "mean score")) + 
+    geom_hline(aes(yintercept = avg_against, color = "mean opponent score")) +
+    labs(x = "opponent", y = "score against opponent", 
+         title = "Strategies' Scores Against Each Opponent:", color = NULL) +
+    theme(plot.title = element_text(face = "bold", hjust = 0.5),
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+          plot.background = element_rect(fill = "white"),
+          axis.title = element_text(face = "bold"),
+          panel.background = element_rect(fill = "white", color = "black"),
+          strip.background = element_rect(color = "NA", fill = "NA"),
+          strip.text.x = element_text(size = 12, face = "bold", color = "black")) + 
+    scale_colour_manual(values = c("red", "blue"))
 
 ```
+
+**ANSWER:** *The two most successful strategies, according to this graph, were backstabber and punisher, with the highest mean scores. However, interestingly, both saw a relatively high mean opponent score, meaning that both players tended to benefit from repeated interactions. This makes sense for punisher, which has qualities similar to titfortat, and backstabber, which only defects endlessly if the opponent defects three times (making it cooperative against strategies like punisher, titfortat, handshaker, and more). This again ties back to Axelrod's conclusion that traits like niceness, forgiveness, and clarity are successful. Backstabber isn't necessarily clear, but with opponents who are cooperative, it exhibits a cooperative pattern, making it clear in these cases. Punisher could stand to be more forgiving, but this is irrelevant when playing cooperative strategies.*
 
 
 ## Question 4
 
 **What is the main difference between the game you played here and the tournament Axelrod implemented? How do you think this difference might matter?**
+
+**ANSWER:** *Axelrod used many more strategies in his simulation, and the entire thing was carried out on a larger scale, with more simulations. The fact that mine only involved six strategies and 100 replications limits the strength of my conclusions; I'd predict that if I involved more strategies - particularly "smarter" strategies, designed carefully by professors like those participating in Axelrod's tournament - titfortat would come out on top, even beating punisher in total points. Titfortat is more forgiving than punisher, which Axelrod identified as a successful trait.*
+
